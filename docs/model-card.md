@@ -88,3 +88,15 @@ Cloud pipeline Voltide_Gradient_v1 (12429000000002051), model 12429000000002054,
 Predictions SHA-256: df8d14b8bc5433378bba55590d52583790e5f3e171bbceced17317931c58b0ed. The overall improvement does not eliminate hot-weather underprediction. Random-forest comparison, fitting-row evidence, refit, and final evaluation remain pending.
 
 The [official release notes](https://docs.catalyst.zoho.com/en/release-notes/all/?service=quickml) state that the train/test split field was removed and a default 80/20 split is used. The visible stage configuration and execution statistics do not expose effective fitting-row identities or final refitting behavior. Therefore 2,400 uploaded development rows must not be represented as 2,400 verified fitted rows; 1,920/480 is the expected default split, not yet a runtime-confirmed row count.
+
+## Random-forest selection candidate V1 and selection freeze
+
+Cloud pipeline Voltide_Forest_v1 (12429000000002079), model 12429000000002082, V1, and endpoint Voltide_Forest_v1 (12429000000002103) were trained/published in the same Catalyst Development project on the unchanged 2,400-row development dataset. Stage configuration: squared-error criterion, 150 estimators, max depth 6, minimum split 2, minimum leaf 3, minimum weight fraction 0, max features 1.0, bootstrap true, out-of-bag false, warm-start false, explainer false. No automatic retraining. The exact 800-row chronological selection set was inferred remotely. Predictions SHA-256: dbe1befc08c57e01512e62d329949111329a872f074b225d39d3f082e4005129.
+
+| Candidate | Selection RMSE kW | MAE kW | Hot (>=30 C) RMSE kW | Actual >=200 kW RMSE kW |
+| --- | ---: | ---: | ---: | ---: |
+| Ridge V1 | 32.0430 | 25.5567 | 35.8169 | 43.8032 |
+| Gradient boosting V1 | **14.1411** | **10.3634** | **30.2140** | **22.5716** |
+| Random forest V1 | 30.1347 | 25.2132 | 52.5274 | 47.3836 |
+
+Selection decision, frozen before viewing locked-test labels or predictions: choose gradient boosting V1. The forest's full selection bias is -10.8485 kW, hot-weather bias -50.0571 kW, and actual >=200 kW bias -44.6649 kW. Candidate comparison uses the same timestamps, source hash, and feature version. Next action: new cloud model trained from first 3,200 source rows, followed by one score on rows 3,201-4,000. The first 3,200 uploaded rows cannot automatically be equated with fitted rows under QuickML's default internal split; that limitation must be reported.

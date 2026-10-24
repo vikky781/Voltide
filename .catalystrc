@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "92462000000018001",
+      "name": "Voltide",
+      "domain": {
+        "id": "50047138433",
+        "name": "voltide-60093105197.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "60093105197",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}

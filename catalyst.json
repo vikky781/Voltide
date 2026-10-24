@@ -1,0 +1,8 @@
+{
+  "appsail": [
+    {
+      "source": "artifacts/appsail",
+      "name": "Voltide"
+    }
+  ]
+}

@@ -4,7 +4,7 @@ Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
 
 ## Current status
 
-Implementation is in progress on `codex/implementation`. Validation, deterministic features, dispatch rules, battery simulation, the Flask API, and the real QuickML evaluator/CLI are implemented. The suite has 103 passing tests. A Ridge baseline is trained and published in QuickML; authenticated 1-row and 24-row requests work. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds. Accuracy on the chronological held-out partitions is still unmeasured. The hosted app, dashboard, and durable history remain pending.
+Implementation is in progress on `codex/implementation`. Validation, deterministic features, dispatch rules, battery simulation, Flask API, real QuickML evaluator/CLI, and the initial React dashboard are implemented. There are 106 passing backend tests and four frontend API-boundary tests. A Ridge baseline is trained and published in QuickML; authenticated 1-row and 24-row requests work. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds. Accuracy on chronological held-out partitions is unmeasured. Public hosting, durable history, manual telemetry entry, exports, and full browser acceptance remain pending.
 
 ## Local development
 
@@ -41,7 +41,7 @@ With credentials configured:
     python predict.py --input sample_test_input.csv --output artifacts/predictions.csv
     python -m web.app
 
-The CLI writes `timestamp,target_demand_kw` atomically and fails without replacing output if any remote batch fails. Batches contain at most 24 rows and share a 120-second operation deadline. No formula fallback remains. The local API is at `http://127.0.0.1:5000`; frontend assets are not built yet.
+The CLI writes `timestamp,target_demand_kw` atomically and fails without replacing output if any remote batch fails. Batches contain at most 24 rows and share a 120-second operation deadline. No formula fallback remains. The local API is at `http://127.0.0.1:5000`. Build the dashboard with `npm ci` and `npm run build` inside frontend/; Flask then serves it from the same origin. `npm test` runs the frontend boundary tests.
 
 ## Design and progress
 

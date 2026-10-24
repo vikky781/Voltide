@@ -14,6 +14,8 @@ Plan: superpowers/plans/2026-10-24-microgrid-implementation-plan.md
 - Task 6a follow-up: create_configured_app wires the shared real client; explicit unconfigured create_app remains available for isolated API tests. No production fixture or alternate demand calculation is introduced.
 - Live follow-up verification: CLI wrote exactly 1000 aligned timestamp/demand rows in 15.583 seconds; real Flask /api/forecast returned 24 aligned results in 1.426 seconds, with SIMULATED battery provenance and saved=false. These are local application/remote inference checks, not a public deployment claim.
 - Tasks 7-10: pending.
+- Task 7 preparation milestone: CLI authenticated in the browser project's account and Voltide access verified. Official CLI generated Python 3.12 AppSail configuration. React CSV/window/battery/result shell builds successfully, four frontend API-boundary tests pass, and three new packaging tests bring backend total to 106. Linux cp312 dependencies are bundled under ignored artifacts/deploy; private deployment settings remain separately ignored under artifacts/appsail. Public deployment is not yet verified. Browser renders the shell; full CSV acceptance waits for the user's manual upload after browser upload permission was declined.
+- Task 8 remains incomplete: manual entry, history/export workflow, complete browser error/responsive acceptance, and final UI refinement are still pending.
 
 ## Pre-flight decisions
 

@@ -6,7 +6,7 @@
 - Initial local baseline used the starter formula. It has now been replaced: the unchanged self-tester passes with 1000 real QuickML predictions in 16.998 seconds. This verifies integration, not accuracy.
 - Catalyst connector authentication works and lists the existing Project-Rainfall development project in the India region. It remains untouched.
 - The QuickML project-list operation returns HTTP 204 (no projects). This does not prove QuickML entitlement or a successful provisioning path.
-- Catalyst CLI 1.29.0 is installed. Its config directory requires execution outside the restricted sandbox. CLI authentication is separate from connector authentication and has not been verified.
+- Catalyst CLI 1.29.0 is installed. Its config directory requires execution outside the restricted sandbox. CLI authentication now succeeds in the dedicated project's account; project:list verifies Voltide 92462000000018001. The user explicitly approved the official CLI's broad deployment scopes. An earlier automatic approval rejection for those scopes was resolved by that explicit approval. The prediction app keeps its separate narrow OAuth credentials.
 - Local tools: Python 3.14.7, stale Python 3.13 registration, Node 24.19.0, npm 11.17.0. Hosted target remains the documented Python 3.12 managed runtime; run compatibility checks before deployment.
 - The connected tools lack general project creation, local CSV dataset import, and AppSail source deployment. Use the official Catalyst console and CLI for those steps.
 - Console sign-in and OneAuth verification completed by the user. Passwords and refresh tokens must not be pasted into chat.
@@ -39,7 +39,17 @@ QuickMLClient uses sequential batches of 24, a 120-second operation deadline, up
 
 ## Local API development
 
-Use the project environment: .venv/Scripts/python.exe -m pytest and .venv/Scripts/python.exe -m web.app on Windows. The configured application provides /api/health, /api/validate, and /api/forecast using real QuickML. Invalid/missing model configuration fails startup. Isolated create_app() without a service returns forecast 503. A built frontend is not present yet.
+Use the project environment: .venv/Scripts/python.exe -m pytest and .venv/Scripts/python.exe -m web.app on Windows. The configured application provides /api/health, /api/validate, and /api/forecast using real QuickML. Invalid/missing model configuration fails startup. Isolated create_app() without a service returns forecast 503. Built frontend assets are served from frontend/dist.
+
+## Dashboard and deployment preparation
+
+Build the dashboard with `npm ci`, `npm test`, and `npm run build` in frontend/. The initial React slice supports original CSV validation, valid 24-hour selection, editable battery assumptions, demand chart, requested-source timeline, and hourly decisions. Battery efficiency is expressed as percent consistently with the API. Full Task 8 acceptance remains pending.
+
+Run `python -m tools.build_appsail --install-dependencies --private-config` from the project virtual environment. This removes only the exact generated artifacts/deploy directory after checking its resolved path, copies allowlisted application files and built assets, and installs Linux x86-64 Python 3.12 wheels. Training datasets, tests, .venv, local .env, and source development files are excluded. Do not run training tools in the hosted app.
+
+The tracked app-config.json is a secret-free template from the CLI, configured for Python 3.12, 512 MiB, and Gunicorn (one process/four threads, 150-second worker timeout). The build helper writes actual secret settings only to ignored artifacts/appsail/app-config.json; catalyst.json selects that source with artifacts/deploy as the build path. SESSION_SECRET is generated privately if missing. Never stage the generated private configuration. The CLI can package the bundle directly; public availability is not established by preparing it.
+
+The installed Node 24.19.0 produces a Catalyst CLI security advisory recommending a patched runtime. It has not been disabled or bypassed; resolving the runtime advisory remains an operations follow-up.
 
 The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
 

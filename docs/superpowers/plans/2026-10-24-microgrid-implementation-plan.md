@@ -13,7 +13,7 @@
 ## Global constraints
 
 - DO NOT TRAIN ANY PART OF ANY MODEL LOCALLY, including fitted preprocessing or tuning; QuickML performs all fitting.
-- Planning creates Markdown only. No application setup, installs, code, uploads, cloud mutations, training, or deployment during this turn.
+- The original planning turn created Markdown only. The user authorized implementation on 24 October 2026; cloud training is allowed, local training remains prohibited.
 - Preserve PROBLEM_STATEMENT.md, train_telemetry.csv, sample_test_input.csv, and test_eval.py.
 - Keep predict(input_df), one prediction per row, original row/timestamp order, and the two-column CSV contract.
 - Storage: demand >160 kW OR hour 18-22 inclusive. Critical alert: demand >=200 kW. Compare unrounded values.

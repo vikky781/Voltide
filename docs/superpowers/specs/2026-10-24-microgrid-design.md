@@ -1,6 +1,6 @@
 # Voltide: HackSphere Microgrid Design
 
-Status: proposed design for user review; implementation is not authorized by this document.
+Status: implementation authorized by the user on 24 October 2026; subsequent user instructions take precedence over this design.
 
 Date: 24 October 2026. Submission date: 28 October 2026; exact cutoff is unknown. Internal completion target: evening of 27 October, Asia/Kolkata. Team: one person.
 

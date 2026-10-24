@@ -1,0 +1,1 @@
+"""Voltide web application."""

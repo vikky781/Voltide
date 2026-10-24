@@ -21,6 +21,20 @@ The user completed console sign-in. The signed-in browser is in organization 600
 - QuickML workspace opens successfully with no datasets, pipelines, models, or endpoints yet.
 - No payment method was added, no paid plan was selected, and no model has been trained. Available training quota and production access still require verification.
 
+## Development dataset imported
+
+- Dataset: Voltide_Development_v1; ID 12429000000003002; version V1.
+- QuickML confirms 2400 records, 11 columns (10 features plus target), 100% valid values, and no missing values.
+- Only artifacts/quickml/development.csv was uploaded. Selection and locked-test labels remain local.
+- The dataset preview samples/shuffles rows for display; feature/label alignment is carried in each uploaded row and external chronological partition membership is preserved.
+- Prediction pipeline creation uses target_demand_kw and leaves automatic retraining disabled. Algorithm configuration and execution are still pending.
+
+## Local API development
+
+Use the project environment: .venv/Scripts/python.exe -m pytest and .venv/Scripts/python.exe -m web.app on Windows. The API provides /api/health, /api/validate, and /api/forecast. No real client is wired yet: forecast returns 503 instead of fabricated predictions. A built frontend is not present yet.
+
+The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
+
 Project creation evidence is stored locally under ignored artifacts/voltide-project.png; account screenshots are not published to Git.
 
 ## Required external setup

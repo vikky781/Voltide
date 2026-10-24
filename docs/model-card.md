@@ -53,3 +53,24 @@ Refit uses rows 1-3200 only after candidate selection. Final cloud fitting can u
 - Successful 1-row, 24-row, and 1000-row inference using the final shared client.
 
 The supplied sample_test_input.csv has no labels and cannot establish accuracy. No local model, learned calibration, or fallback formula qualifies as the submitted QuickML model.
+
+## Chronological selection result: baseline V1
+
+The first 2,400-row cloud candidate was evaluated remotely on source rows 2401-3200 (800 rows), with exact timestamp/order alignment. Source hash matches the preparation manifest. Predictions SHA-256: a4c9ac2795bf7811ff31ec692a267a3fdcb8cc9934b50976445112848fb0f830. No fitting or calibration occurred during scoring.
+
+| Subset | Count | RMSE kW | MAE kW | Mean prediction minus actual kW |
+| --- | ---: | ---: | ---: | ---: |
+| All selection rows | 800 | 32.0430 | 25.5567 | -11.1916 |
+| Temperature >=30 C | 95 | 35.8169 | 30.5442 | -30.2639 |
+| Actual demand >=200 kW | 206 | 43.8032 | 41.0862 | -41.0862 |
+
+This baseline substantially underpredicts high demand. It is an integration baseline, not the frozen production model. Candidate comparison and verified cloud fitting-row behavior remain open; the locked final 800 have not been scored.
+
+Reproduce from the repository root with the private endpoint configuration loaded:
+
+```powershell
+.venv\Scripts\python.exe predict.py --input artifacts/quickml/selection_inputs.csv --output artifacts/selection-linear-v1.csv
+.venv\Scripts\python.exe -m tools.score_predictions --partition selection --predictions artifacts/selection-linear-v1.csv --model-version Voltide_Linear_v1:V1 --output artifacts/selection-linear-v1-metrics.json
+```
+
+The scorer requires a new output path and never overwrites an evaluation record. Hot weather is defined in advance as >=30 C; the peak subset uses actual demand >=200 kW. Empty subsets return null metrics with count zero. Locked-test discipline remains an explicit experiment protocol, not a security control enforced by filenames.

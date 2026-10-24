@@ -1,12 +1,16 @@
 # Voltide
 
-Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
+Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0. **Team: Voidrun.**
 
 ## Current status
 
-Implementation is in progress on `codex/implementation`. The [hosted application](https://voltide-50047138433.development.catalystappsail.in) serves CSV/manual weather input, real QuickML forecasts, dispatch decisions, a labeled battery simulation, private session history, and CSV exports. Cloud saves survive redeployment; another session cannot retrieve a run. There are 133 passing backend tests and 10 frontend tests. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds.
+The [hosted application](https://voltide-50047138433.development.catalystappsail.in) serves CSV/manual weather input, real QuickML forecasts, dispatch decisions, a labeled battery simulation, private session history, and CSV exports. Cloud saves survive redeployment; another session cannot retrieve a run. There are 133 passing backend tests and 10 frontend tests. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows.
 
-Three cloud-trained candidates were compared on the same 800-row chronological selection set. Gradient boosting won with RMSE 14.1411 kW; Ridge scored 32.0430 kW and random forest 30.1347 kW. A cloud gradient refit on the first 3,200 uploaded rows scored RMSE 13.2666 kW and MAE 10.1386 kW on the single locked 800-row test. The final cloud GB model on the 4,000-row uploaded dataset is Ready and deployed through its published endpoint. Real 1/24/1,000-row inference and the unchanged starter evaluator passed. The public app returned a real 24-hour final-model forecast with saved history and cross-session isolation. The browser also accepted the 1,000-row sample CSV and saved its final-model forecast. Effective cloud fitting-row evidence and mobile acceptance remain open. See the model card and progress log for verified evidence and limits.
+Three cloud-trained candidates were compared on the same 800-row chronological selection set. Gradient boosting won with RMSE 14.1411 kW; Ridge scored 32.0430 kW and random forest 30.1347 kW. A cloud gradient refit on the first 3,200 uploaded rows scored RMSE 13.2666 kW and MAE 10.1386 kW on the single locked 800-row test. The final cloud GB model on the 4,000-row uploaded dataset is Ready and deployed through its published endpoint. Real 1/24/1,000-row inference and the unchanged starter evaluator passed. The public app returned a real 24-hour final-model forecast with saved history and cross-session isolation. The browser also accepted the 1,000-row sample CSV and saved its final-model forecast. Effective cloud fitting-row evidence and mobile acceptance remain open. See the [model card](docs/model-card.md) for verified evidence and limits.
+
+## Architecture
+
+The React dashboard sends weather telemetry to a same-origin Flask API on Zoho Catalyst AppSail. The API validates timestamps and weather, calculates deterministic features, calls the published QuickML regression endpoint through prediction-only OAuth, and applies the fixed dispatch rules and labeled battery simulation. Forecast runs and exports are scoped to the browser session and stored in Catalyst Data Store and Stratus. The same QuickML client powers the evaluator-compatible `predict(input_df)` function and CSV CLI; there is no local fitted model or formula fallback.
 
 ## Local development
 
@@ -45,10 +49,9 @@ With credentials configured:
 
 The CLI writes `timestamp,target_demand_kw` atomically and fails without replacing output if any remote batch fails. Batches contain at most 24 rows and share a 120-second operation deadline. No formula fallback remains. The local API is at `http://127.0.0.1:5000`. Build the dashboard with `npm ci` and `npm run build` inside frontend/; Flask then serves it from the same origin. `npm test` runs the frontend boundary tests.
 
-## Design and progress
+## Project documentation
 
-- [Technical design](docs/superpowers/specs/2026-10-24-microgrid-design.md)
-- [Implementation plan](docs/superpowers/plans/2026-10-24-microgrid-implementation-plan.md)
-- [Verified progress and decisions](docs/progress.md)
+- [Model selection, accuracy, and limitations](docs/model-card.md)
+- [Deployment, storage, and operations](docs/operations.md)
 
 Forecast timestamps are dataset-local wall-clock values. Battery values are explicitly simulated; no physical power switches are controlled.

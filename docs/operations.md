@@ -11,6 +11,18 @@
 - The connected tools lack general project creation, local CSV dataset import, and AppSail source deployment. Use the official Catalyst console and CLI for those steps.
 - The console browser opens at Zoho Accounts sign-in. The user must complete sign-in; passwords and refresh tokens must not be pasted into chat.
 
+## Dedicated project provisioned
+
+The user completed console sign-in. The signed-in browser is in organization 60093105197, which differs from the connector's organization. Use the browser-provisioned project details below for Voltide; do not mix them with the connector's unrelated account/project context.
+
+- Voltide project ID: 92462000000018001.
+- Organization: 60093105197; India data center; Development environment.
+- Console: https://console.catalyst.zoho.in/baas/60093105197/project/92462000000018001/Development#/quickml/home
+- QuickML workspace opens successfully with no datasets, pipelines, models, or endpoints yet.
+- No payment method was added, no paid plan was selected, and no model has been trained. Available training quota and production access still require verification.
+
+Project creation evidence is stored locally under ignored artifacts/voltide-project.png; account screenshots are not published to Git.
+
 ## Required external setup
 
 1. Sign in at https://console.catalyst.zoho.in/ and verify the Catalyst account if requested.

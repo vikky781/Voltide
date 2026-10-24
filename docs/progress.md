@@ -7,8 +7,8 @@ Plan: superpowers/plans/2026-10-24-microgrid-implementation-plan.md
 - Implementation authorized. Branch codex/implementation created from 6eab8e3.
 - Task 1 discovery milestone: connector access, local tools, repository scope, and original self-test verified; details in operations.md. Task 1 remains incomplete pending console login, dedicated project/QuickML provisioning, and evaluator rules.
 - Task 2: complete. Validation, correction provenance, explicit 24-hour windows, feature contract v1, and deterministic cloud data preparation are implemented. RED: 29 tests failed because the modules were absent. GREEN: all 29 tests pass; real preparation produced the five exact partitions and original hashes are unchanged. Verification: python -m pytest -q; python -m tools.prepare_quickml_data --output artifacts/quickml.
-- Tasks 3-4: await a real published endpoint; no response schema will be guessed.
-- Task 5: can proceed after Task 2, independently of cloud access.
+- Tasks 3-4: Voltide project and QuickML workspace created; dataset import is next. A real published endpoint and captured contract are still required.
+- Task 5: complete. Exact demand/time rules, independent critical flags, validated battery assumptions, energy limits/reserve/efficiency, explicit shortfalls, and shared forecast composition are implemented. RED: 31 new tests failed for absent behavior. GREEN: all 60 tests pass. Network boundaries are fixtures in composition tests; no actual model result is claimed.
 - Tasks 6-10: pending.
 
 ## Pre-flight decisions
@@ -22,3 +22,4 @@ Plan: superpowers/plans/2026-10-24-microgrid-implementation-plan.md
 - Ruling: use Windows PowerShell equivalents for plan bookkeeping when appropriate; the Bash task scripts are available through Git Bash. The tracked progress file supplements the scratch ledger so verification and blocked status survive a push.
 - Task 2 ruling: credential-specific runtime configuration is deferred to Task 4's verified endpoint contract; .env.example records intended names now. Cost if wrong: credentials still require validation before any real inference; Task 4 remains an explicit gate.
 - The user has no organizer guide beyond PROBLEM_STATEMENT.md. Exact cutoff, judge timeout, and credential handoff stay unknown rather than generating additional repeated requests.
+- Task 5 interface clarification: hourly results include storage_shortfall and alerts (CRITICAL_OVERLOAD / STORAGE_SHORTFALL), alongside the specified controller and battery fields. These directly expose the required alerts; no switching threshold or requested mode changes.

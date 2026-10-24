@@ -4,7 +4,7 @@ Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
 
 ## Current status
 
-Implementation is in progress on `codex/implementation`. CSV validation, the shared deterministic feature contract, and chronological QuickML data preparation are implemented and tested. A real QuickML model, hosted app, and dashboard are not available yet. The original `predict.py` still contains its starter fallback; do not treat it as a completed model integration.
+Implementation is in progress on `codex/implementation`. CSV validation, shared deterministic features, chronological cloud data preparation, exact dispatch rules, and battery simulation are implemented. The suite has 60 passing tests. A dedicated Voltide Catalyst project and QuickML workspace exist; a real model endpoint, hosted app, and dashboard are not available yet. The original `predict.py` still contains its starter fallback; do not treat it as a completed model integration.
 
 ## Local development
 

@@ -3,7 +3,7 @@
 - Canonical repository: https://github.com/vikky781/Voltide.
 - After every completed implementation step or documentation milestone, run the relevant checks, commit the intended changes, and push to the canonical repository before moving to the next step. Report a failed push explicitly; a local commit alone does not complete this workflow. Never force-push or include credentials/generated environment files.
 - DO NOT TRAIN ANY PART OF ANY MODEL LOCALLY. This PC has no GPU, and CPU training is also prohibited. All model fitting, fitted preprocessing, tuning, and retraining must run remotely in Zoho Catalyst QuickML. Local deterministic feature preparation, remote API inference calls, scoring, and application tests are allowed.
-- The user has requested planning only so far. Begin product implementation only after the user requests it. Before implementing, read docs/superpowers/specs/2026-10-24-microgrid-design.md and docs/superpowers/plans/2026-10-24-microgrid-implementation-plan.md, then apply subsequent user decisions.
+- The user authorized implementation on 24 October 2026. Follow docs/superpowers/specs/2026-10-24-microgrid-design.md and docs/superpowers/plans/2026-10-24-microgrid-implementation-plan.md, applying subsequent user decisions. Track verified progress in docs/progress.md; do not mark externally blocked tasks complete.
 
 <!-- codebase-memory-mcp:start -->
 ## Codebase Knowledge Graph

@@ -1,0 +1,31 @@
+# Voltide operations
+
+## Verified on 24 October 2026
+
+- Repository: https://github.com/vikky781/Voltide; implementation branch: codex/implementation.
+- Local baseline: unchanged starter self-test succeeds on 1,000 rows using its original formula fallback. This is not evidence of QuickML integration or model accuracy.
+- Catalyst connector authentication works and lists the existing Project-Rainfall development project in the India region. It remains untouched.
+- The QuickML project-list operation returns HTTP 204 (no projects). This does not prove QuickML entitlement or a successful provisioning path.
+- Catalyst CLI 1.29.0 is installed. Its config directory requires execution outside the restricted sandbox. CLI authentication is separate from connector authentication and has not been verified.
+- Local tools: Python 3.14.7, additional Python 3.13, Node 24.19.0, npm 11.17.0. Hosted target remains the documented Python 3.12 managed runtime; run compatibility checks before deployment.
+- The connected tools lack general project creation, local CSV dataset import, and AppSail source deployment. Use the official Catalyst console and CLI for those steps.
+- The console browser opens at Zoho Accounts sign-in. The user must complete sign-in; passwords and refresh tokens must not be pasted into chat.
+
+## Required external setup
+
+1. Sign in at https://console.catalyst.zoho.in/ and verify the Catalyst account if requested.
+2. Provision a dedicated Voltide project, preserving unrelated projects. Confirm QuickML and AppSail availability and the account's budget/quota before cloud jobs.
+3. Upload the prepared development feature partition to QuickML. Model training, learned preprocessing, and tuning occur only there; never locally.
+4. Publish a regression endpoint and capture its sample request/response, authentication requirements, model version, and actual internal split behavior.
+5. Store credentials in private local/hosted environment settings. The browser and Git must never receive endpoint keys, OAuth refresh tokens, or client secrets.
+6. Verify hosted SDK permissions, production/public URL access, token renewal, and actual latency before declaring the release ready.
+
+## Information requested from organizers
+
+The exact 28 October cutoff, evaluator invocation mode, timeout, dependency installation procedure, and permitted secret credential handoff are not yet known. These remain release risks; the application and deterministic core can be implemented independently.
+
+## Scope and safety
+
+No local model fitting is permitted, including CPU fitting or learned imputers/scalers. Deterministic parsing/features, remote calls, scoring supplied predictions, application builds, and tests are permitted. Data timestamps are dataset-local wall-clock values; do not infer a timezone from the India account region. Battery values are simulated, with assumptions attached to each run.
+
+Development fixtures can replace remote network boundaries in tests. Production and evaluator paths must never return simulated demand after a QuickML failure. The original CSVs, problem statement, and test_eval.py remain unchanged.

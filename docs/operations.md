@@ -5,9 +5,9 @@
 - Repository: https://github.com/vikky781/Voltide; implementation branch: codex/implementation.
 - Initial local baseline used the starter formula. It has now been replaced: the unchanged self-tester passes with 1000 real QuickML predictions in 16.998 seconds. This verifies integration, not accuracy.
 - Catalyst connector authentication works and lists the existing Project-Rainfall development project in the India region. It remains untouched.
-- The QuickML project-list operation returns HTTP 204 (no projects). This does not prove QuickML entitlement or a successful provisioning path.
-- Catalyst CLI 1.29.0 is installed. Its config directory requires execution outside the restricted sandbox. CLI authentication now succeeds in the dedicated project's account; project:list verifies Voltide 92462000000018001. The user explicitly approved the official CLI's broad deployment scopes. An earlier automatic approval rejection for those scopes was resolved by that explicit approval. The prediction app keeps its separate narrow OAuth credentials.
-- Local tools: Python 3.14.7, stale Python 3.13 registration, Node 24.19.0, npm 11.17.0. Hosted target remains the documented Python 3.12 managed runtime; run compatibility checks before deployment.
+- The connected Catalyst MCP account belongs to a different organization and cannot administer the browser-provisioned Voltide project. QuickML entitlement is verified by three successful cloud model executions and remote predictions in the dedicated project.
+- Catalyst CLI 1.29.0 is installed. CLI authentication now succeeds in the dedicated project's account; project:list verifies Voltide 92462000000018001. The user explicitly approved the official CLI's broad deployment scopes. An earlier automatic approval rejection for those scopes was resolved by that explicit approval. The prediction app keeps its separate narrow OAuth credentials.
+- Local tools: Python 3.14.7, stale Python 3.13 registration, Node 24.19.0, npm 11.17.0. Hosted AppSail uses managed Python 3.12; the bundled dependencies and SDK storage have passed deployed integration checks.
 - The connected tools lack general project creation, local CSV dataset import, and AppSail source deployment. Use the official Catalyst console and CLI for those steps.
 - Console sign-in and OneAuth verification completed by the user. Passwords and refresh tokens must not be pasted into chat.
 
@@ -18,8 +18,8 @@ The user completed console sign-in. The signed-in browser is in organization 600
 - Voltide project ID: 92462000000018001.
 - Organization: 60093105197; India data center; Development environment.
 - Console: https://console.catalyst.zoho.in/baas/60093105197/project/92462000000018001/Development#/quickml/home
-- QuickML workspace contains the development dataset, Ridge pipeline/model V1, and baseline endpoint described in model-card.md.
-- No payment method was added and no paid plan was selected. Cloud training and prediction succeed; remaining quota and production/public application access still require verification.
+- QuickML workspace contains the development dataset and Ridge, gradient-boosting, and random-forest pipelines, models, and endpoints described in model-card.md.
+- No payment method was added and no paid plan was selected. Cloud training and prediction succeed; remaining quota and the exact production entitlement remain unverified; public Development access is verified.
 
 ## Development dataset imported
 
@@ -43,11 +43,11 @@ Use the project environment: .venv/Scripts/python.exe -m pytest and .venv/Script
 
 ## Dashboard and deployment preparation
 
-Build the dashboard with `npm ci`, `npm test`, and `npm run build` in frontend/. The initial React slice supports original CSV validation, valid 24-hour selection, editable battery assumptions, demand chart, requested-source timeline, and hourly decisions. Battery efficiency is expressed as percent consistently with the API. Full Task 8 acceptance remains pending.
+Build the dashboard with `npm ci`, `npm test`, and `npm run build` in frontend/. The React dashboard supports CSV and manual weather entry, exact 24-hour validation, editable battery assumptions, a lazily loaded demand chart, hourly source/SOC inspection, warnings, private newest-20 history, and predictions/dispatch exports even when a run cannot be saved. Battery efficiency is expressed as percent consistently with the API. Browser CSV upload and 390-pixel responsive acceptance remain pending.
 
 Run `python -m tools.build_appsail --install-dependencies --private-config` from the project virtual environment. This removes only the exact generated artifacts/deploy directory after checking its resolved path, copies allowlisted application files and built assets, and installs Linux x86-64 Python 3.12 wheels. Training datasets, tests, .venv, local .env, and source development files are excluded. Do not run training tools in the hosted app.
 
-The tracked app-config.json is a secret-free template from the CLI, configured for Python 3.12, 512 MiB, and Gunicorn (one process/four threads, 150-second worker timeout). The build helper writes actual secret settings only to ignored artifacts/appsail/app-config.json; catalyst.json selects that source with artifacts/deploy as the build path. SESSION_SECRET is generated privately if missing. Never stage the generated private configuration. The CLI can package the bundle directly; public availability is not established by preparing it.
+The tracked app-config.json is a secret-free template from the CLI, configured for Python 3.12, 512 MiB, and Gunicorn (one process/four threads, 150-second worker timeout). The build helper writes actual secret settings only to ignored artifacts/appsail/app-config.json; catalyst.json selects that source with artifacts/deploy as the build path. SESSION_SECRET is generated privately if missing. Never stage the generated private configuration. The CLI packages and deploys this bundle; public availability is verified separately by health and browser/API checks.
 
 The installed Node 24.19.0 produces a Catalyst CLI security advisory recommending a patched runtime. It has not been disabled or bypassed; resolving the runtime advisory remains an operations follow-up.
 
@@ -65,14 +65,14 @@ The first deployed process returned 503 because AppSail executes startup command
 
 Redeploy after rebuilding with `catalyst deploy --only appsail:Voltide --project 92462000000018001 --org 60093105197 --dc in --non-interactive`. Inspect public health and a real prediction after every deployment. Keep generated deployment settings out of Git.
 
-SDK compatibility: zcatalyst-sdk 1.4.0 constrains typing-extensions to ~=4.12.1. Pydantic 2.13.5 requires >=4.14.1, so these cannot be resolved together. The application now validates the five battery fields with standard Python dataclasses, preserving strict finite numbers, bounds, frozen settings, and structured API errors. Pydantic is no longer a dependency; no vendor constraint was overridden. Project `pip check` passes. Rebuild the Linux bundle before the next deployment so it uses this compatible dependency set.
+SDK compatibility: zcatalyst-sdk 1.4.0 constrains typing-extensions to ~=4.12.1. Pydantic 2.13.5 requires >=4.14.1, so these cannot be resolved together. The application now validates the five battery fields with standard Python dataclasses, preserving strict finite numbers, bounds, frozen settings, and structured API errors. Pydantic is no longer a dependency; no vendor constraint was overridden. Project `pip check` passes. The rebuilt Linux bundle with compatible dependencies and SDK storage has been deployed successfully.
 
 ## Private run history
 
 Provisioned in the dedicated Development project:
 
 - Data Store table ForecastRuns, ID 92462000000018025. All application columns are mandatory; run_id is unique. App Administrator retains access; App User has no Select/Insert/Update/Delete permissions. The revoked default App User Select permission was verified after reloading the console.
-- Encrypted Stratus bucket voltide-runs-92462000000018001, Development URL https://voltide-runs-92462000000018001-development.zohostratus.in. Bucket policy explicitly denies public GetObject/PutObject/DeleteObject and contains no authenticated end-user allow rule. Server SDK administrator access must still be verified by a real round trip. No storage object is publicly linked by the API.
+- Encrypted Stratus bucket voltide-runs-92462000000018001, Development URL https://voltide-runs-92462000000018001-development.zohostratus.in. Bucket policy explicitly denies public GetObject/PutObject/DeleteObject and contains no authenticated end-user allow rule. Server SDK administrator access passed a real save/read round trip. No storage object is publicly linked by the API.
 
 | Column | Type / limit |
 | --- | --- |
@@ -92,19 +92,19 @@ A signed HTTP-only SameSite=Lax cookie contains a random browser identifier. A s
 
 Each private runs/{session_hash}/{run_id}.json stores schema version 1, original source_rows, validated_rows with original positions, and the complete result including corrections and battery assumptions. The object is uploaded first; only then is metadata inserted. A failed index write may leave a private orphan object. Failed storage leaves a complete forecast with saved=false and a warning; it never advertises a history record. Logs include only failure stage and exception class, not upstream bodies or credentials.
 
-GET /api/runs lists the newest 20 session summaries. GET /api/runs/{run_id} returns only that session's result. GET /api/runs/{run_id}/export?kind=predictions writes timestamp,target_demand_kw; kind=dispatch includes all dispatch/battery/alert columns. Unknown kinds return 400, missing/other-session runs 404, unavailable history 503. API responses and exports use no-store. Real cloud durability and session isolation are not yet claimed by fixture tests.
+GET /api/runs lists the newest 20 session summaries. GET /api/runs/{run_id} returns only that session's result. GET /api/runs/{run_id}/export?kind=predictions writes timestamp,target_demand_kw; kind=dispatch includes all dispatch/battery/alert columns. Unknown kinds return 400, missing/other-session runs 404, unavailable history 503. API responses and exports use no-store. Real cloud save, reload after redeployment, authorized history, both exports, cross-session 404, and direct unauthenticated object 403 have been verified with generated non-private input.
 
-The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
+The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 runtime has passed public forecast and storage checks.
 
 Project creation evidence is stored locally under ignored artifacts/voltide-project.png; account screenshots are not published to Git.
 
-## Required external setup
+## Remaining release gates
 
-1. Verify QuickML internal split/fitted-row usage, remaining quota, and production/public application access.
-2. Verify CLI identity for the dedicated Voltide project; connector credentials belong to another organization.
-3. Deploy the first real inference path and supply secrets through private hosted environment settings.
-4. Verify hosted SDK permissions, durable session-scoped persistence, and public workflow before declaring the release ready.
-5. Complete cloud candidate selection and held-out scoring; all fitting remains exclusively in QuickML.
+1. Human upload of `artifacts/quickml/refit.csv` in the QuickML console, to continue the frozen gradient candidate on first 3,200 rows. Browser upload authorization was declined for the agent; no alternate automated route should be used for this upload.
+2. Score the locked final 800 exactly once after the refit model is available. Only then prepare and train the final 4,000-row cloud version through the console, with the same human file-picker handoff if needed.
+3. Verify final endpoint shape, 1/24/1,000-row real inference, hosted forecast/storage, and release source/credential instructions. Keep the working endpoint as rollback.
+4. Human CSV browser acceptance: upload `sample_test_input.csv` through “Choose a telemetry CSV” in the local dashboard. This file is unlabeled sample telemetry; it is not `train_telemetry.csv`.
+5. The browser viewport override did not change the actual 920-pixel content viewport, so true 390-pixel mobile acceptance remains unverified. Review it on a real narrow viewport. Exact organizer cutoff, judge timeout, dependency installation, and credential handoff remain unknown.
 
 ## Information requested from organizers
 

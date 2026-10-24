@@ -4,7 +4,9 @@ Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
 
 ## Current status
 
-Implementation is in progress on `codex/implementation`. The [first hosted slice](https://voltide-50047138433.development.catalystappsail.in) serves the dashboard/API and calls real QuickML. Validation, deterministic features, dispatch rules, battery simulation, evaluator/CLI, and the initial React dashboard are implemented. History/export APIs and private cloud storage are prepared, with real cloud persistence verification still pending. There are 125 passing backend tests and four frontend API-boundary tests. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds. Accuracy on chronological held-out partitions is unmeasured. Manual telemetry entry, browser history/export controls, and full browser acceptance remain pending.
+Implementation is in progress on `codex/implementation`. The [hosted application](https://voltide-50047138433.development.catalystappsail.in) serves CSV/manual weather input, real QuickML forecasts, dispatch decisions, a labeled battery simulation, private session history, and CSV exports. Cloud saves survive redeployment; another session cannot retrieve a run. There are 133 passing backend tests and 10 frontend tests. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds.
+
+The first Ridge candidate's chronological selection RMSE is 32.0430 kW, with substantial high-demand underprediction. Model comparison, effective cloud fitting-row evidence, final model freeze, CSV browser-upload acceptance, and mobile acceptance remain open. See the model card and progress log for verified evidence and limits.
 
 ## Local development
 
@@ -49,4 +51,4 @@ The CLI writes `timestamp,target_demand_kw` atomically and fails without replaci
 - [Implementation plan](docs/superpowers/plans/2026-10-24-microgrid-implementation-plan.md)
 - [Verified progress and decisions](docs/progress.md)
 
-Forecast timestamps are dataset-local wall-clock values. Battery values will be explicitly simulated; no physical power switches are controlled.
+Forecast timestamps are dataset-local wall-clock values. Battery values are explicitly simulated; no physical power switches are controlled.

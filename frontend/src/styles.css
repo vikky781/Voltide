@@ -154,3 +154,7 @@ button:disabled { cursor: default; opacity: .55; }
 .history-list strong { font-size: 12px; }
 .history-list span { font-size: 12px; }
 .history-list small { font-size: 10px; color: #597383; overflow-wrap: anywhere; }
+
+.selected-hour { display: grid; grid-template-columns: minmax(180px, 1fr) 1fr; gap: 20px; align-items: center; }
+.selected-hour p { font-size: 12px; margin: 8px 0 0; }
+@media (max-width: 760px) { .selected-hour { grid-template-columns: 1fr; } }

@@ -35,4 +35,13 @@ describe('original-source forecast boundary', () => {
     await api('/api/health');
     expect(fetch.mock.calls[0][1]).toMatchObject({ credentials: 'same-origin', method: 'GET' });
   });
+
+  it('submits original manual rows as JSON without substituting cleaned preview values', async () => {
+    const fetch = vi.fn().mockResolvedValue(new Response('{"rows":[]}'));
+    vi.stubGlobal('fetch', fetch);
+    const source = [{ timestamp: '2015-01-01 00:00:00', ambient_temp_c: '' }];
+    await api('/api/validate', { source_rows: source });
+    expect(JSON.parse(fetch.mock.calls[0][1].body).source_rows).toEqual(source);
+    expect(fetch.mock.calls[0][1].headers).toEqual({ 'Content-Type': 'application/json' });
+  });
 });

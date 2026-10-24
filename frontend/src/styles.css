@@ -139,3 +139,18 @@
   @media (max-width: 760px) { main { padding: 26px 16px 16px; } .topbar { padding: 17px 20px; min-height: 74px; } .brand span { display: none; } .service-status { max-width: 145px; line-height: 1.5; font-size: 10px; } .service-status > span { flex-shrink: 0; } .page-heading { align-items: start; } .environment { display: none; } .workspace-grid { grid-template-columns: 1fr; } .input-panel { padding: 20px; } .upload { min-height: 120px; } .empty-forecast { min-height: 330px; padding: 30px 20px; } .empty-forecast h2 { font-size: 23px; } .empty-key { gap: 8px; font-size: 9px; } .dispatch-tape { gap: 2px; } .dispatch-tape > div { font-size: 8px; } .dispatch-tape i { height: 26px; } .run-heading h2 { font-size: 17px; } .run-heading h2 span { display: block; margin: 5px 0 0; } footer { flex-direction: column; gap: 9px; } footer > span { text-align: left; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; } }
 }
+
+.source-tabs { display: flex; gap: 6px; margin: 15px 0; }
+.source-tabs button, .secondary { background: white; color: #235568; border: 1px solid #bfd2da; border-radius: 5px; padding: 9px 12px; font: inherit; font-size: 12px; cursor: pointer; }
+.source-tabs button[aria-pressed="true"] { background: #e3f1ef; border-color: #008080; color: #00686a; }
+button:disabled { cursor: default; opacity: .55; }
+.export-actions { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 18px; }
+.manual-input .table-scroll { margin-bottom: 16px; }
+.manual-input input { width: 105px; min-height: 36px; border: 1px solid #bfd2da; border-radius: 4px; padding: 7px; font: inherit; }
+.history { margin-top: 20px; }
+.history-list { list-style: none; padding: 0; margin: 12px 0 0; max-height: 320px; overflow: auto; }
+.history-list button { width: 100%; text-align: left; padding: 14px 0; background: transparent; border: 0; border-bottom: 1px solid #e3ebee; cursor: pointer; color: #203e50; }
+.history-list strong, .history-list span, .history-list small { display: block; margin: 3px 0; }
+.history-list strong { font-size: 12px; }
+.history-list span { font-size: 12px; }
+.history-list small { font-size: 10px; color: #597383; overflow-wrap: anywhere; }

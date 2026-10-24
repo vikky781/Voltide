@@ -4,10 +4,13 @@ export class ApiError extends Error {
   constructor(message: string, public issues: Issue[] = [], public requestId?: string) { super(message); }
 }
 
-export async function api<T>(path: string, body?: FormData): Promise<T> {
+export async function api<T>(path: string, body?: FormData | Record<string, unknown>): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(path, { method: body ? 'POST' : 'GET', body, credentials: 'same-origin' });
+    const json = body !== undefined && !(body instanceof FormData);
+    response = await fetch(path, { method: body ? 'POST' : 'GET',
+      body: json ? JSON.stringify(body) : body as FormData | undefined,
+      ...(json ? { headers: { 'Content-Type': 'application/json' } } : {}), credentials: 'same-origin' });
   } catch { throw new ApiError('Cannot reach the server. Check your connection and try again.'); }
   let data;
   try { data = await response.json(); }

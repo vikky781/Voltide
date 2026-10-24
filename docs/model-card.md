@@ -1,6 +1,6 @@
 # Voltide model card
 
-Status: first cloud-only Ridge baseline trained and externally callable. Candidate selection, effective fitting-row count, chronological selection/locked-test accuracy, and final-model freeze remain pending. Local preparation below performs no fitting.
+Status: three cloud-only candidates were compared on the same chronological selection set. Gradient boosting V1 is the selected candidate and provisionally serves the hosted application. The 3,200-row cloud refit, locked-test score, 4,000-row final cloud fit, and effective fitted-row count remain pending. Local preparation below performs no fitting.
 
 ## Baseline evidence, 24 October 2026
 
@@ -64,7 +64,7 @@ The first 2,400-row cloud candidate was evaluated remotely on source rows 2401-3
 | Temperature >=30 C | 95 | 35.8169 | 30.5442 | -30.2639 |
 | Actual demand >=200 kW | 206 | 43.8032 | 41.0862 | -41.0862 |
 
-This baseline substantially underpredicts high demand. It is an integration baseline, not the frozen production model. Candidate comparison and verified cloud fitting-row behavior remain open; the locked final 800 have not been scored.
+This baseline substantially underpredicts high demand. It remains a rollback integration baseline; verified cloud fitting-row behavior remains open, and the locked final 800 have not been scored.
 
 Reproduce from the repository root with the private endpoint configuration loaded:
 
@@ -77,7 +77,7 @@ The scorer requires a new output path and never overwrites an evaluation record.
 
 ## Gradient-boosting selection candidate V1
 
-Cloud pipeline Voltide_Gradient_v1 (12429000000002051), model 12429000000002054, V1, completed successfully on the same development dataset V1. Stage: GB Regression, squared-error loss, learning rate 0.1, 100 estimators, Friedman-MSE criterion, subsample 1, max depth 3, min split 2, min leaf 5, min weight fraction 0, max features None, max leaf nodes unset, min impurity 0, init None, warm start false, tolerance 0.01831563888, explainer false. Automatic retraining is disabled. Internal RMSE 9.0178 kW and MAE 7.2381 kW are supplementary only. Endpoint Voltide_Gradient_v1 (12429000000002073) returned 800 actual selection predictions; its private key is ignored and the app remains on Ridge during comparison.
+Cloud pipeline Voltide_Gradient_v1 (12429000000002051), model 12429000000002054, V1, completed successfully on the same development dataset V1. Stage: GB Regression, squared-error loss, learning rate 0.1, 100 estimators, Friedman-MSE criterion, subsample 1, max depth 3, min split 2, min leaf 5, min weight fraction 0, max features None, max leaf nodes unset, min impurity 0, init None, warm start false, tolerance 0.01831563888, explainer false. Automatic retraining is disabled. Internal RMSE 9.0178 kW and MAE 7.2381 kW are supplementary only. Endpoint Voltide_Gradient_v1 (12429000000002073) returned 800 actual selection predictions; its private key is ignored by Git. The hosted app now serves this candidate provisionally.
 
 | Subset | Count | RMSE kW | MAE kW | Mean prediction minus actual kW |
 | --- | ---: | ---: | ---: | ---: |
@@ -85,7 +85,7 @@ Cloud pipeline Voltide_Gradient_v1 (12429000000002051), model 12429000000002054,
 | Temperature >=30 C | 95 | 30.2140 | 27.5676 | -27.5361 |
 | Actual demand >=200 kW | 206 | 22.5716 | 18.0408 | -17.2787 |
 
-Predictions SHA-256: df8d14b8bc5433378bba55590d52583790e5f3e171bbceced17317931c58b0ed. The overall improvement does not eliminate hot-weather underprediction. Random-forest comparison, fitting-row evidence, refit, and final evaluation remain pending.
+Predictions SHA-256: df8d14b8bc5433378bba55590d52583790e5f3e171bbceced17317931c58b0ed. The overall improvement does not eliminate hot-weather underprediction. Fitting-row evidence, refit, and final evaluation remain pending.
 
 The [official release notes](https://docs.catalyst.zoho.com/en/release-notes/all/?service=quickml) state that the train/test split field was removed and a default 80/20 split is used. The visible stage configuration and execution statistics do not expose effective fitting-row identities or final refitting behavior. Therefore 2,400 uploaded development rows must not be represented as 2,400 verified fitted rows; 1,920/480 is the expected default split, not yet a runtime-confirmed row count.
 
@@ -100,3 +100,7 @@ Cloud pipeline Voltide_Forest_v1 (12429000000002079), model 12429000000002082, V
 | Random forest V1 | 30.1347 | 25.2132 | 52.5274 | 47.3836 |
 
 Selection decision, frozen before viewing locked-test labels or predictions: choose gradient boosting V1. The forest's full selection bias is -10.8485 kW, hot-weather bias -50.0571 kW, and actual >=200 kW bias -44.6649 kW. Candidate comparison uses the same timestamps, source hash, and feature version. Next action: new cloud model trained from first 3,200 source rows, followed by one score on rows 3,201-4,000. The first 3,200 uploaded rows cannot automatically be equated with fitted rows under QuickML's default internal split; that limitation must be reported.
+
+## Provisional hosted candidate
+
+The selected Gradient V1 endpoint passed real 24-row and 1,000-row CLI inference and the unchanged starter evaluator before deployment. The private deployment configuration was switched to `Voltide_Gradient_v1:V1` and AppSail deployment succeeded. Public health returned HTTP 200 with `model_configured=true`; a separate public `/api/forecast` request returned HTTP 200, exactly 24 real hourly predictions, `model_version=Voltide_Gradient_v1:V1`, and `saved=true`. A Ridge run created before the redeployment remained in the same browser session's history and reopened with its original 24 hourly decisions. The active gradient endpoint is provisional until the cloud refit, locked score, and final cloud model are complete. The private Ridge endpoint configuration is retained locally for rollback; neither key is committed.

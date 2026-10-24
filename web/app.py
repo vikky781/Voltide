@@ -23,7 +23,7 @@ from energy.validation import (
 
 def create_app(*, service=None) -> Flask:
     app = Flask(__name__, static_folder=None)
-    session_secret = os.environ.get("SESSION_SECRET")
+    session_secret = os.environ.get("VOLTIDE_SESSION_SECRET", os.environ.get("SESSION_SECRET"))
     hosted = "X_ZOHO_CATALYST_LISTEN_PORT" in os.environ
     if hosted and not session_secret:
         raise RuntimeError("SESSION_SECRET is required in the hosted environment.")

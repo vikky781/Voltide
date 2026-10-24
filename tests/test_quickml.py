@@ -120,3 +120,15 @@ def test_configuration_rejects_missing_or_unsafe_destinations():
         with pytest.raises(ValueError):
             replace(settings(), **change)
     assert 'private' not in repr(settings())
+
+
+def test_hosted_settings_use_project_namespace_over_platform_reserved_values():
+    from energy.config import QuickMLSettings
+    env = {'VOLTIDE_QUICKML_ENDPOINT_URL': settings().endpoint_url,
+           'VOLTIDE_QUICKML_ENDPOINT_KEY': 'key', 'VOLTIDE_QUICKML_MODEL_VERSION': 'model',
+           'VOLTIDE_CATALYST_ORG_ID': '456', 'VOLTIDE_CATALYST_PROJECT_ID': '123',
+           'VOLTIDE_ZOHO_CLIENT_ID': 'client', 'VOLTIDE_ZOHO_CLIENT_SECRET': 'secret',
+           'VOLTIDE_ZOHO_REFRESH_TOKEN': 'refresh', 'VOLTIDE_CATALYST_ENVIRONMENT': 'Development',
+           'CATALYST_PROJECT_ID': 'platform-managed-value', 'CATALYST_ENVIRONMENT': 'platform-value'}
+    assert QuickMLSettings.from_env(env).project_id == '123'
+    assert QuickMLSettings.from_env(env).environment == 'Development'

@@ -46,10 +46,13 @@ class QuickMLSettings:
                   'model_version': 'QUICKML_MODEL_VERSION', 'org_id': 'CATALYST_ORG_ID',
                   'project_id': 'CATALYST_PROJECT_ID', 'client_id': 'ZOHO_CLIENT_ID',
                   'client_secret': 'ZOHO_CLIENT_SECRET', 'refresh_token': 'ZOHO_REFRESH_TOKEN'}
-        missing = [name for name in fields.values() if not env.get(name)]
+        def setting(name, default=None):
+            return env.get('VOLTIDE_' + name, env.get(name, default))
+
+        missing = [name for name in fields.values() if not setting(name)]
         if missing:
             raise ValueError('Missing required QuickML settings: ' + ', '.join(missing))
-        return cls(**{key: env[name] for key, name in fields.items()},
-                   environment=env.get('CATALYST_ENVIRONMENT', 'Development'),
-                   accounts_url=env.get('ZOHO_ACCOUNTS_URL', 'https://accounts.zoho.in'),
-                   feature_version=env.get('QUICKML_FEATURE_VERSION', FEATURE_VERSION))
+        return cls(**{key: setting(name) for key, name in fields.items()},
+                   environment=setting('CATALYST_ENVIRONMENT', 'Development'),
+                   accounts_url=setting('ZOHO_ACCOUNTS_URL', 'https://accounts.zoho.in'),
+                   feature_version=setting('QUICKML_FEATURE_VERSION', FEATURE_VERSION))

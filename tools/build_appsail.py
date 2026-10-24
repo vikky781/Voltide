@@ -45,7 +45,7 @@ def private_config(root: Path, env: dict) -> Path:
         raise ValueError('Missing private deployment settings: ' + ', '.join(missing))
     allowed = [*required, 'QUICKML_FEATURE_VERSION', 'CATALYST_ENVIRONMENT', 'ZOHO_ACCOUNTS_URL']
     config = json.loads((root / 'app-config.json').read_text())
-    config['env_variables'] = {key: env[key] for key in allowed if env.get(key)}
+    config['env_variables'] = {'VOLTIDE_' + key: env[key] for key in allowed if env.get(key)}
     config['build_path'] = '../deploy'
     path = root / 'artifacts/appsail/app-config.json'
     if path.parent.resolve() != path.parent:

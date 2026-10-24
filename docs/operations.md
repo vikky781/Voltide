@@ -51,6 +51,20 @@ The tracked app-config.json is a secret-free template from the CLI, configured f
 
 The installed Node 24.19.0 produces a Catalyst CLI security advisory recommending a patched runtime. It has not been disabled or bypassed; resolving the runtime advisory remains an operations follow-up.
 
+## First hosted slice
+
+- URL: https://voltide-50047138433.development.catalystappsail.in (Development environment, reachable without login cookies).
+- AppSail ID: 92462000000019001; Python 3.12; 512 MiB; deployed from CLI on 24 October 2026.
+- Health: HTTP 200, status=ok, model_configured=true. This is configuration readiness, not a fresh model prediction on each health request.
+- Real hosted /api/forecast: 24 aligned predictions from generated, non-private constant weather, model Voltide_Linear_v1:V1, HTTP 200, 0.735 seconds after warm startup. Battery provenance SIMULATED, saved=false. Evidence remains private in artifacts/hosted-forecast-synthetic.json. This does not establish model accuracy or the browser CSV upload flow.
+- Browser dashboard renders and calls health successfully. Manual CSV acceptance remains pending because browser upload permission was declined; no alternate browser/upload mechanism was used.
+
+The first metadata upload failed because supplied environment names collided with platform-reserved names. Hosted private configuration now prefixes every application variable with VOLTIDE_; runtime readers prefer these over platform-managed names. Local .env names remain compatible. Do not override Catalyst's own reserved environment values.
+
+The first deployed process returned 503 because AppSail executes startup commands directly, without shell expansion. The startup command now explicitly uses `sh -c` and `exec` to expand the platform's port and forward process signals. See the official [startup command requirements](https://docs.catalyst.zoho.com/en/serverless/help/appsail/appsail-configurations/). The subsequent public HTTP 200 verifies the correction. A CLI deployment success or console Live label alone is not application health evidence.
+
+Redeploy after rebuilding with `catalyst deploy --only appsail:Voltide --project 92462000000018001 --org 60093105197 --dc in --non-interactive`. Inspect public health and a real prediction after every deployment. Keep generated deployment settings out of Git.
+
 The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
 
 Project creation evidence is stored locally under ignored artifacts/voltide-project.png; account screenshots are not published to Git.

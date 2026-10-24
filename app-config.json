@@ -1,5 +1,5 @@
 {
-	"command": "python3 -m gunicorn --bind 0.0.0.0:${X_ZOHO_CATALYST_LISTEN_PORT} --workers 1 --threads 4 --timeout 150 'web.app:create_configured_app()'",
+	"command": "sh -c \"exec python3 -m gunicorn --bind 0.0.0.0:${X_ZOHO_CATALYST_LISTEN_PORT} --workers 1 --threads 4 --timeout 150 'web.app:create_configured_app()'\"",
 	"build_path": "../deploy",
 	"stack": "python_3_12",
 	"env_variables": {},

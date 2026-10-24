@@ -48,6 +48,8 @@ def test_private_config_is_separate_from_build_and_rejects_missing_credentials(t
     path = private_config(tmp_path, env)
     body = json.loads(path.read_text())
     assert 'UNRELATED_CREDENTIAL' not in body['env_variables']
-    assert body['env_variables']['SESSION_SECRET'] == 'secret-value'
+    assert body['env_variables']['VOLTIDE_SESSION_SECRET'] == 'secret-value'
+    assert all(key.startswith('VOLTIDE_') for key in body['env_variables'])
+    assert 'CATALYST_PROJECT_ID' not in body['env_variables']
     assert body['build_path'] == '../deploy'
     assert json.loads((tmp_path / 'app-config.json').read_text()) == template

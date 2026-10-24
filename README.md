@@ -4,7 +4,7 @@ Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
 
 ## Current status
 
-Implementation is in progress on `codex/implementation`. Validation, deterministic features, dispatch rules, battery simulation, Flask API, real QuickML evaluator/CLI, and the initial React dashboard are implemented. There are 106 passing backend tests and four frontend API-boundary tests. A Ridge baseline is trained and published in QuickML; authenticated 1-row and 24-row requests work. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds. Accuracy on chronological held-out partitions is unmeasured. Public hosting, durable history, manual telemetry entry, exports, and full browser acceptance remain pending.
+Implementation is in progress on `codex/implementation`. The [first hosted slice](https://voltide-50047138433.development.catalystappsail.in) serves the dashboard/API and calls real QuickML. Validation, deterministic features, dispatch rules, battery simulation, evaluator/CLI, and the initial React dashboard are implemented. There are 107 passing backend tests and four frontend API-boundary tests. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds. Accuracy on chronological held-out partitions is unmeasured. Durable history, manual telemetry entry, exports, and full browser acceptance remain pending.
 
 ## Local development
 

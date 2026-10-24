@@ -25,7 +25,7 @@ The user completed console sign-in. The signed-in browser is in organization 600
 
 - Dataset: Voltide_Development_v1; ID 12429000000003002; version V1.
 - QuickML confirms 2400 records, 11 columns (10 features plus target), 100% valid values, and no missing values.
-- Only artifacts/quickml/development.csv was uploaded. Selection and locked-test labels remain local.
+- The initial candidate training used only artifacts/quickml/development.csv. The later remote refit used artifacts/quickml/refit.csv after selection was frozen; selection.csv and locked_test.csv were never uploaded as training datasets.
 - The dataset preview samples/shuffles rows for display; feature/label alignment is carried in each uploaded row and external chronological partition membership is preserved.
 - Prediction pipeline uses target_demand_kw and leaves automatic retraining disabled. Ridge configuration and cloud execution succeeded; see model-card.md.
 
@@ -105,9 +105,9 @@ Project creation evidence is stored locally under ignored artifacts/voltide-proj
 Source/archive audit on 24 October: `git archive` of the pushed implementation commit contained 85 tracked entries, including `predict.py`, `test_eval.py`, backend and frontend source, requirements, and runbooks. It contained no `.env`, generated `artifacts/`, `.venv/`, `frontend/dist/`, `frontend/node_modules/`, or Python bytecode. The original supplied CSVs remain tracked as project inputs. At this checkpoint, 133 backend tests, 10 frontend tests, the TypeScript/production build, and `pip check` passed. These checks do not replace the pending final-endpoint and browser acceptance gates.
 
 1. Refit import and remote execution are complete: the user uploaded `artifacts/quickml/refit.csv` to QuickML as dataset `Voltide_Refit_v1`, ID 12429000000003055, V1, with 3,200 records and 11 complete columns. Prediction pipeline 12429000000002118 and model 12429000000002121 completed successfully; separate endpoint 12429000000002147 is Published. Real external 1-row and 24-row tests passed exact-column, order, and finite-value checks. Its private endpoint key is under ignored `artifacts/refit-endpoint-private.json`. Browser upload authorization for the agent was declined; the user performed the upload directly. Dataset detail's separate Create Pipeline action also produced an unexecuted Data Transformation pipeline 12429000000002115; it is not connected to this model and performed no fitting.
-2. Score the locked final 800 exactly once after the new refit endpoint is available. Only then prepare and train the final 4,000-row cloud version through the console, with the same human file-picker handoff if needed.
+2. Locked final 800 scored exactly once from the new refit endpoint: 800 aligned real predictions, RMSE 13.2666 kW, MAE 10.1386 kW. The SHA-256 and all subset metrics are frozen in model-card.md and ignored `artifacts/locked-gb-refit-v1-metrics.json`. Next, the user must upload `artifacts/quickml/final.csv` (all 4,000 labeled rows) through the QuickML file picker for the final remote cloud fit. Do not train or fit locally.
 3. Verify final endpoint shape, 1/24/1,000-row real inference, hosted forecast/storage, and release source/credential instructions. Keep the working endpoint as rollback.
-4. Human CSV browser acceptance: upload `sample_test_input.csv` through “Choose a telemetry CSV” in the local dashboard. This file is unlabeled sample telemetry; it is not `train_telemetry.csv`.
+4. Human CSV browser acceptance: upload `sample_test_input.csv` through “Choose a telemetry CSV” in the local dashboard. This file is unlabeled sample telemetry; it is not `train_telemetry.csv` or `refit.csv`.
 5. The browser viewport override did not change the actual 920-pixel content viewport, so true 390-pixel mobile acceptance remains unverified. Review it on a real narrow viewport. Exact organizer cutoff, judge timeout, dependency installation, and credential handoff remain unknown.
 
 ## Information requested from organizers

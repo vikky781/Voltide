@@ -6,7 +6,7 @@ Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
 
 Implementation is in progress on `codex/implementation`. The [hosted application](https://voltide-50047138433.development.catalystappsail.in) serves CSV/manual weather input, real QuickML forecasts, dispatch decisions, a labeled battery simulation, private session history, and CSV exports. Cloud saves survive redeployment; another session cannot retrieve a run. There are 133 passing backend tests and 10 frontend tests. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds.
 
-Three cloud-trained candidates were compared on the same 800-row chronological selection set. Gradient boosting won with RMSE 14.1411 kW and is provisionally deployed; Ridge scored 32.0430 kW and random forest 30.1347 kW. Effective cloud fitting-row evidence, a new cloud refit, locked-test scoring, final model freeze, CSV browser-upload acceptance, and mobile acceptance remain open. See the model card and progress log for verified evidence and limits.
+Three cloud-trained candidates were compared on the same 800-row chronological selection set. Gradient boosting won with RMSE 14.1411 kW and is provisionally deployed; Ridge scored 32.0430 kW and random forest 30.1347 kW. A new cloud gradient refit on the first 3,200 uploaded rows scored RMSE 13.2666 kW and MAE 10.1386 kW on the single locked 800-row test. Effective cloud fitting-row evidence, the final 4,000-row cloud model, CSV browser-upload acceptance, and mobile acceptance remain open. See the model card and progress log for verified evidence and limits.
 
 ## Local development
 
@@ -33,7 +33,7 @@ The preparation command preserves the original dataset and writes ignored files 
 | `*_inputs.csv` | Corresponding original timestamp/weather inputs without demand labels. |
 | `manifest.json` | Source hash, feature version, columns, row ranges, and timestamps. |
 
-The development dataset is already in QuickML. The next upload is `refit.csv` for a new cloud model trained on the first 3,200 rows, with `target_demand_kw` as the target. Keep `selection.csv` and `locked_test.csv` out of training; the locked set is scored once after the refit. See [model card](docs/model-card.md) for feature details and [operations](docs/operations.md) for the current handoff.
+The development and refit datasets are already in QuickML, and the single locked evaluation is recorded. The next upload is `final.csv` for the final cloud fit using all 4,000 labeled rows, with `target_demand_kw` as the target. Keep `selection.csv` and `locked_test.csv` out of training. See [model card](docs/model-card.md) for feature details and [operations](docs/operations.md) for the current handoff.
 
 Secrets belong in a private `.env` or hosted environment settings, never in Git. Copy `.env.example` and supply the India-region endpoint and OAuth values. Local `.env` loads without overriding existing environment variables. One-time authorization uses the approved `QuickML.deployment.READ` scope; `python -m tools.authorize_quickml` prompts for the short-lived code without echoing it. Never paste secrets into chat.
 

@@ -44,7 +44,7 @@ class ForecastService:
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "saved": False, "warnings": [*validated.warnings,
                 "Run is not saved until cloud persistence is connected."],
-            "battery_provenance": "SIMULATED", "battery_settings": settings.model_dump(),
+            "battery_provenance": "SIMULATED", "battery_settings": asdict(settings),
             "source_positions": [row.position for row in rows],
             "corrections": [asdict(correction) for correction in validated.corrections],
             "summary": {

@@ -65,6 +65,8 @@ The first deployed process returned 503 because AppSail executes startup command
 
 Redeploy after rebuilding with `catalyst deploy --only appsail:Voltide --project 92462000000018001 --org 60093105197 --dc in --non-interactive`. Inspect public health and a real prediction after every deployment. Keep generated deployment settings out of Git.
 
+SDK compatibility: zcatalyst-sdk 1.4.0 constrains typing-extensions to ~=4.12.1. Pydantic 2.13.5 requires >=4.14.1, so these cannot be resolved together. The application now validates the five battery fields with standard Python dataclasses, preserving strict finite numbers, bounds, frozen settings, and structured API errors. Pydantic is no longer a dependency; no vendor constraint was overridden. Project `pip check` passes. Rebuild the Linux bundle before the next deployment so it uses this compatible dependency set.
+
 The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
 
 Project creation evidence is stored locally under ignored artifacts/voltide-project.png; account screenshots are not published to Git.

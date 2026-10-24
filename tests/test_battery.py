@@ -54,6 +54,8 @@ def test_discharge_power_limit_and_starting_at_reserve():
     {"initial_soc_pct": 101}, {"initial_soc_pct": 10, "reserve_soc_pct": 20},
     {"reserve_soc_pct": -1}, {"discharge_efficiency_pct": 0},
     {"discharge_efficiency_pct": 101}, {"capacity_kwh": True},
+    {"capacity_kwh": "2000"}, {"reserve_soc_pct": float("nan")}, {"unknown": 1},
+    {"capacity_kwh": 10 ** 400},
 ])
 def test_invalid_battery_assumptions_are_rejected(settings):
     from energy.contracts import BatterySettings

@@ -1,7 +1,7 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from datetime import datetime
-
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+import math
+from numbers import Real
 
 
 WEATHER_FIELDS = ("ambient_temp_c", "humidity_pct", "solar_irradiance_wm2")
@@ -59,20 +59,48 @@ class ValidationResult:
         return self.rows
 
 
-class BatterySettings(BaseModel):
-    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False, frozen=True)
+class BatterySettingsError(ValueError):
+    def __init__(self, issues: list[CellIssue]):
+        super().__init__('Battery settings are invalid.')
+        self.issues = issues
 
-    capacity_kwh: float = Field(default=2000.0, gt=0)
-    initial_soc_pct: float = Field(default=80.0, ge=0, le=100)
-    reserve_soc_pct: float = Field(default=20.0, ge=0, le=100)
-    max_discharge_kw: float = Field(default=250.0, gt=0)
-    discharge_efficiency_pct: float = Field(default=95.0, gt=0, le=100)
 
-    @model_validator(mode="after")
-    def check_reserve(self):
-        if self.reserve_soc_pct > self.initial_soc_pct:
-            raise ValueError("Initial state of charge must be at or above reserve.")
-        return self
+@dataclass(frozen=True, init=False)
+class BatterySettings:
+    capacity_kwh: float = 2000.0
+    initial_soc_pct: float = 80.0
+    reserve_soc_pct: float = 20.0
+    max_discharge_kw: float = 250.0
+    discharge_efficiency_pct: float = 95.0
+
+    def __init__(self, **values):
+        defaults = {item.name: item.default for item in fields(self)}
+        issues = [CellIssue(0, key, 'INVALID_SETTING', 'Unknown battery setting.')
+                  for key in values if key not in defaults]
+        positive = {'capacity_kwh', 'max_discharge_kw', 'discharge_efficiency_pct'}
+        percentages = {'initial_soc_pct', 'reserve_soc_pct', 'discharge_efficiency_pct'}
+        for name, default in defaults.items():
+            value = values.get(name, default)
+            message = None
+            try:
+                finite = not isinstance(value, bool) and isinstance(value, Real) and math.isfinite(value)
+            except OverflowError:
+                finite = False
+            if not finite:
+                message = 'Enter a finite number.'
+            elif value < 0 or (name in positive and value == 0):
+                message = 'Value must be greater than zero.' if name in positive else 'Value must be at least zero.'
+            elif name in percentages and value > 100:
+                message = 'Percentage must not exceed 100.'
+            if message:
+                issues.append(CellIssue(0, name, 'INVALID_SETTING', message))
+            else:
+                object.__setattr__(self, name, float(value))
+        if not issues and self.reserve_soc_pct > self.initial_soc_pct:
+            issues.append(CellIssue(0, 'reserve_soc_pct', 'INVALID_SETTING',
+                                    'Initial state of charge must be at or above reserve.'))
+        if issues:
+            raise BatterySettingsError(issues)
 
 
 @dataclass(frozen=True)

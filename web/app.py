@@ -11,10 +11,9 @@ from time import monotonic
 from uuid import uuid4
 
 from flask import Flask, abort, g, jsonify, request, send_from_directory
-from pydantic import ValidationError
 from werkzeug.exceptions import BadRequest, HTTPException
 
-from energy.contracts import BatterySettings, PredictionError, TelemetryError
+from energy.contracts import BatterySettings, BatterySettingsError, PredictionError, TelemetryError
 from energy.validation import (
     forecast_windows, MAX_SOURCE_BYTES, MAX_SOURCE_ROWS, parse_csv,
     parse_telemetry, select_forecast_window,
@@ -61,11 +60,9 @@ def create_app(*, service=None) -> Flask:
     def invalid_predictions(_error):
         return error_response("The model returned invalid predictions. Please retry later.", 502)
 
-    @app.errorhandler(ValidationError)
+    @app.errorhandler(BatterySettingsError)
     def invalid_settings(error):
-        issues = [{"row": 0, "column": ".".join(map(str, issue["loc"])),
-                   "code": "INVALID_SETTING", "message": issue["msg"]}
-                  for issue in error.errors(include_input=False, include_context=False)]
+        issues = [asdict(issue) for issue in error.issues]
         return error_response("Battery settings are invalid.", 422, issues)
 
     @app.errorhandler(HTTPException)

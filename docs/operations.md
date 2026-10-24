@@ -102,6 +102,8 @@ Project creation evidence is stored locally under ignored artifacts/voltide-proj
 
 ## Remaining release gates
 
+Source/archive audit on 24 October: `git archive` of the pushed implementation commit contained 85 tracked entries, including `predict.py`, `test_eval.py`, backend and frontend source, requirements, and runbooks. It contained no `.env`, generated `artifacts/`, `.venv/`, `frontend/dist/`, `frontend/node_modules/`, or Python bytecode. The original supplied CSVs remain tracked as project inputs. At this checkpoint, 133 backend tests, 10 frontend tests, the TypeScript/production build, and `pip check` passed. These checks do not replace the pending final-endpoint and browser acceptance gates.
+
 1. Human upload of `artifacts/quickml/refit.csv` in the QuickML console, to continue the frozen gradient candidate on first 3,200 rows. Browser upload authorization was declined for the agent; no alternate automated route should be used for this upload.
 2. Score the locked final 800 exactly once after the refit model is available. Only then prepare and train the final 4,000-row cloud version through the console, with the same human file-picker handoff if needed.
 3. Verify final endpoint shape, 1/24/1,000-row real inference, hosted forecast/storage, and release source/credential instructions. Keep the working endpoint as rollback.

@@ -1,80 +1,65 @@
+"""HackSphere evaluator and CSV CLI backed exclusively by published QuickML."""
+
+import argparse
+from functools import lru_cache
+import os
+from pathlib import Path
+import sys
+import tempfile
+
 import numpy as np
-
 import pandas as pd
-
 import requests
 
+from energy.config import QuickMLSettings
+from energy.features import build_features
+from energy.quickml import QuickMLClient
+from energy.validation import parse_telemetry
 
-QUICKML_ENDPOINT_URL = "YOUR_PUBLISHED_QUICKML_ENDPOINT_URL_HERE"
+
+@lru_cache(maxsize=1)
+def get_client() -> QuickMLClient:
+    return QuickMLClient(QuickMLSettings.from_env())
 
 
 def predict(input_df: pd.DataFrame):
-
-    """Parameters:
-
-
-        input_df (pandas.DataFrame): DataFrame with columns
-
-        ['timestamp', 'ambient_temp_c', 'humidity_pct', 'solar_irradiance_wm2']
+    """Return one real cloud prediction per input row, preserving source order."""
+    if not isinstance(input_df, pd.DataFrame):
+        raise ValueError('predict requires a pandas DataFrame.')
+    rows = parse_telemetry(input_df).require_valid()
+    return np.asarray(get_client().predict_rows(build_features(rows)), dtype=float)
 
 
-    Returns:
-
-        numpy.ndarray or list: Predicted demand (kW) for each input row.
-
-    """
-
-
-    if QUICKML_ENDPOINT_URL != "YOUR_PUBLISHED_QUICKML_ENDPOINT_URL_HERE":
-
-        try:
-
-
-            payload = {"data": input_df.to_dict(orient="records")}
-
-
-            response = requests.post(
-
-                QUICKML_ENDPOINT_URL, json=payload, timeout=10
-
-            )
-
-            response.raise_for_status()
-
-
-            result = response.json()
-
-            return np.array(result["predictions"], dtype=float)
-
-
-        except Exception as e:
-
-            print(f"Warning: QuickML endpoint call failed ({e}).")
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description='Predict demand using Voltide QuickML.')
+    parser.add_argument('--input', required=True, type=Path, help='Input weather CSV')
+    parser.add_argument('--output', required=True, type=Path, help='Complete prediction CSV')
+    args = parser.parse_args(argv)
+    temporary = None
+    try:
+        if args.input.resolve() == args.output.resolve():
+            raise ValueError('Input and output paths must differ.')
+        source = pd.read_csv(args.input, encoding='utf-8-sig', dtype={'timestamp': str})
+        predictions = predict(source)
+        rows = parse_telemetry(source).require_valid()
+        result = pd.DataFrame({'timestamp': [row.timestamp for row in rows],
+                               'target_demand_kw': predictions})
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', newline='',
+                dir=args.output.parent, prefix=args.output.name + '.', suffix='.tmp', delete=False) as handle:
+            temporary = Path(handle.name)
+            result.to_csv(handle, index=False)
+        os.replace(temporary, args.output)
+        temporary = None
+    except (OSError, ValueError, requests.RequestException):
+        print('Prediction failed. Check input, private configuration, and QuickML availability. '
+              'No output was replaced.', file=sys.stderr)
+        return 1
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+    print(f'Wrote {len(result)} real QuickML predictions to {args.output}.', file=sys.stderr)
+    return 0
 
 
-    hours = pd.to_datetime(input_df["timestamp"]).dt.hour
-
-    base_load = 120.0 + 30.0 * np.sin(2 * np.pi * (hours - 6) / 24)
-
-    cooling_load = np.maximum(0.0, input_df["ambient_temp_c"] - 24.0) * 8.5
-
-
-    dummy_predictions = (base_load + cooling_load).values
-
-    return np.array(dummy_predictions, dtype=float)
-
-
-if __name__ == "__main__":
-
-
-    print("Testing predict.py on sample_test_input.csv...")
-
-    sample_df = pd.read_csv("sample_test_input.csv")
-
-    preds = predict(sample_df)
-
-    print(
-
-        f"Generated {len(preds)} predictions. First 5 samples:\n{preds[:5]}"
-
-    ) 
+if __name__ == '__main__':
+    raise SystemExit(main())

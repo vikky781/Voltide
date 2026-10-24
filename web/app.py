@@ -153,5 +153,13 @@ def create_app(*, service=None) -> Flask:
     return app
 
 
+def create_configured_app() -> Flask:
+    from energy.config import QuickMLSettings
+    from energy.forecast import ForecastService
+    from energy.quickml import QuickMLClient
+
+    return create_app(service=ForecastService(QuickMLClient(QuickMLSettings.from_env())))
+
+
 if __name__ == "__main__":
-    create_app().run(host="127.0.0.1", port=int(os.environ.get("PORT", 5000)))
+    create_configured_app().run(host="127.0.0.1", port=int(os.environ.get("PORT", 5000)))

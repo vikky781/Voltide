@@ -4,7 +4,7 @@ Smart energy demand forecasting and microgrid dispatch for HackSphere 3.0.
 
 ## Current status
 
-Implementation is in progress on `codex/implementation`. CSV validation, shared deterministic features, cloud data preparation, exact dispatch rules, battery simulation, and the initial Flask API are implemented. The suite has 73 passing tests. Voltide's Catalyst project, QuickML workspace, and 2400-row development dataset exist. A real model endpoint, hosted app, and dashboard are not available yet. The original `predict.py` still contains its starter fallback; do not treat it as a completed model integration. The new web API returns an explicit 503 until a real model client is wired.
+Implementation is in progress on `codex/implementation`. Validation, deterministic features, dispatch rules, battery simulation, the Flask API, and the real QuickML evaluator/CLI are implemented. The suite has 103 passing tests. A Ridge baseline is trained and published in QuickML; authenticated 1-row and 24-row requests work. The unchanged starter evaluator passed against the real endpoint for all 1,000 sample rows in 17.0 seconds. Accuracy on the chronological held-out partitions is still unmeasured. The hosted app, dashboard, and durable history remain pending.
 
 ## Local development
 
@@ -33,7 +33,15 @@ The preparation command preserves the original dataset and writes ignored files 
 
 Upload **only development.csv** for the first cloud model, with `target_demand_kw` as the target. Do not upload `selection.csv` or `locked_test.csv` as training data during model selection. See [model card](docs/model-card.md) for feature details and [operations](docs/operations.md) for remaining account setup.
 
-Secrets belong in a private `.env` or hosted environment settings, never in Git. `.env.example` lists the intended names; actual endpoint authentication will be verified before the inference client is completed.
+Secrets belong in a private `.env` or hosted environment settings, never in Git. Copy `.env.example` and supply the India-region endpoint and OAuth values. Local `.env` loads without overriding existing environment variables. One-time authorization uses the approved `QuickML.deployment.READ` scope; `python -m tools.authorize_quickml` prompts for the short-lived code without echoing it. Never paste secrets into chat.
+
+With credentials configured:
+
+    python test_eval.py
+    python predict.py --input sample_test_input.csv --output artifacts/predictions.csv
+    python -m web.app
+
+The CLI writes `timestamp,target_demand_kw` atomically and fails without replacing output if any remote batch fails. Batches contain at most 24 rows and share a 120-second operation deadline. No formula fallback remains. The local API is at `http://127.0.0.1:5000`; frontend assets are not built yet.
 
 ## Design and progress
 

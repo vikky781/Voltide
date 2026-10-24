@@ -3,13 +3,13 @@
 ## Verified on 24 October 2026
 
 - Repository: https://github.com/vikky781/Voltide; implementation branch: codex/implementation.
-- Local baseline: unchanged starter self-test succeeds on 1,000 rows using its original formula fallback. This is not evidence of QuickML integration or model accuracy.
+- Initial local baseline used the starter formula. It has now been replaced: the unchanged self-tester passes with 1000 real QuickML predictions in 16.998 seconds. This verifies integration, not accuracy.
 - Catalyst connector authentication works and lists the existing Project-Rainfall development project in the India region. It remains untouched.
 - The QuickML project-list operation returns HTTP 204 (no projects). This does not prove QuickML entitlement or a successful provisioning path.
 - Catalyst CLI 1.29.0 is installed. Its config directory requires execution outside the restricted sandbox. CLI authentication is separate from connector authentication and has not been verified.
-- Local tools: Python 3.14.7, additional Python 3.13, Node 24.19.0, npm 11.17.0. Hosted target remains the documented Python 3.12 managed runtime; run compatibility checks before deployment.
+- Local tools: Python 3.14.7, stale Python 3.13 registration, Node 24.19.0, npm 11.17.0. Hosted target remains the documented Python 3.12 managed runtime; run compatibility checks before deployment.
 - The connected tools lack general project creation, local CSV dataset import, and AppSail source deployment. Use the official Catalyst console and CLI for those steps.
-- The console browser opens at Zoho Accounts sign-in. The user must complete sign-in; passwords and refresh tokens must not be pasted into chat.
+- Console sign-in and OneAuth verification completed by the user. Passwords and refresh tokens must not be pasted into chat.
 
 ## Dedicated project provisioned
 
@@ -18,8 +18,8 @@ The user completed console sign-in. The signed-in browser is in organization 600
 - Voltide project ID: 92462000000018001.
 - Organization: 60093105197; India data center; Development environment.
 - Console: https://console.catalyst.zoho.in/baas/60093105197/project/92462000000018001/Development#/quickml/home
-- QuickML workspace opens successfully with no datasets, pipelines, models, or endpoints yet.
-- No payment method was added, no paid plan was selected, and no model has been trained. Available training quota and production access still require verification.
+- QuickML workspace contains the development dataset, Ridge pipeline/model V1, and baseline endpoint described in model-card.md.
+- No payment method was added and no paid plan was selected. Cloud training and prediction succeed; remaining quota and production/public application access still require verification.
 
 ## Development dataset imported
 
@@ -27,11 +27,19 @@ The user completed console sign-in. The signed-in browser is in organization 600
 - QuickML confirms 2400 records, 11 columns (10 features plus target), 100% valid values, and no missing values.
 - Only artifacts/quickml/development.csv was uploaded. Selection and locked-test labels remain local.
 - The dataset preview samples/shuffles rows for display; feature/label alignment is carried in each uploaded row and external chronological partition membership is preserved.
-- Prediction pipeline creation uses target_demand_kw and leaves automatic retraining disabled. Algorithm configuration and execution are still pending.
+- Prediction pipeline uses target_demand_kw and leaves automatic retraining disabled. Ridge configuration and cloud execution succeeded; see model-card.md.
+
+## Verified endpoint and authorization
+
+Endpoint URL: https://api.catalyst.zoho.in/quickml/v1/project/92462000000018001/endpoints/predict. Required headers: X-QUICKML-ENDPOINT-KEY, Authorization (`Zoho-oauthtoken`), CATALYST-ORG, and Environment (`Development`). Scope: QuickML.deployment.READ. Both single-object and 24-record array data payloads return an aligned result array.
+
+The user approved creation of a Self Client and prediction-only access in the signed-in browser account. Client credentials and refresh token are stored only in ignored .env. A short-lived grant is exchanged using POST form data to https://accounts.zoho.in/oauth/v2/token, without URL query credentials or token output. Inference automatically refreshes expired access tokens; a 401 triggers one refresh/replay. No browser cookie or unrelated connector credential is used.
+
+QuickMLClient uses sequential batches of 24, a 120-second operation deadline, up to two transient retries, and refuses long rate-limit waits. Malformed, missing, negative, nonfinite, nested, or misaligned outputs fail the entire operation. There is no fallback prediction. Captured fixtures omit all headers and tokens.
 
 ## Local API development
 
-Use the project environment: .venv/Scripts/python.exe -m pytest and .venv/Scripts/python.exe -m web.app on Windows. The API provides /api/health, /api/validate, and /api/forecast. No real client is wired yet: forecast returns 503 instead of fabricated predictions. A built frontend is not present yet.
+Use the project environment: .venv/Scripts/python.exe -m pytest and .venv/Scripts/python.exe -m web.app on Windows. The configured application provides /api/health, /api/validate, and /api/forecast using real QuickML. Invalid/missing model configuration fails startup. Isolated create_app() without a service returns forecast 503. A built frontend is not present yet.
 
 The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
 
@@ -39,12 +47,11 @@ Project creation evidence is stored locally under ignored artifacts/voltide-proj
 
 ## Required external setup
 
-1. Sign in at https://console.catalyst.zoho.in/ and verify the Catalyst account if requested.
-2. Provision a dedicated Voltide project, preserving unrelated projects. Confirm QuickML and AppSail availability and the account's budget/quota before cloud jobs.
-3. Upload the prepared development feature partition to QuickML. Model training, learned preprocessing, and tuning occur only there; never locally.
-4. Publish a regression endpoint and capture its sample request/response, authentication requirements, model version, and actual internal split behavior.
-5. Store credentials in private local/hosted environment settings. The browser and Git must never receive endpoint keys, OAuth refresh tokens, or client secrets.
-6. Verify hosted SDK permissions, production/public URL access, token renewal, and actual latency before declaring the release ready.
+1. Verify QuickML internal split/fitted-row usage, remaining quota, and production/public application access.
+2. Verify CLI identity for the dedicated Voltide project; connector credentials belong to another organization.
+3. Deploy the first real inference path and supply secrets through private hosted environment settings.
+4. Verify hosted SDK permissions, durable session-scoped persistence, and public workflow before declaring the release ready.
+5. Complete cloud candidate selection and held-out scoring; all fitting remains exclusively in QuickML.
 
 ## Information requested from organizers
 

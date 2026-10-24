@@ -1,0 +1,26 @@
+{
+  "status": 200,
+  "elapsed_seconds": 0.651,
+  "request": {
+    "data": {
+      "ambient_temp_c": 35.66,
+      "humidity_pct": 56.38,
+      "solar_irradiance_wm2": 169.0,
+      "hour": 15,
+      "hour_sin": -0.7071067811865471,
+      "hour_cos": -0.7071067811865479,
+      "weekday": 1,
+      "month": 6,
+      "is_weekend": 0,
+      "cooling_degree_c": 11.659999999999997
+    }
+  },
+  "response": {
+    "result": [
+      197.81910590113347
+    ],
+    "pipeLineType": "prediction",
+    "status": "success"
+  },
+  "provenance": "Live Voltide_Linear_v1:V1 endpoint, 24 October 2026; weather inputs only; headers and tokens omitted."
+}

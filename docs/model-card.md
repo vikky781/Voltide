@@ -74,3 +74,17 @@ Reproduce from the repository root with the private endpoint configuration loade
 ```
 
 The scorer requires a new output path and never overwrites an evaluation record. Hot weather is defined in advance as >=30 C; the peak subset uses actual demand >=200 kW. Empty subsets return null metrics with count zero. Locked-test discipline remains an explicit experiment protocol, not a security control enforced by filenames.
+
+## Gradient-boosting selection candidate V1
+
+Cloud pipeline Voltide_Gradient_v1 (12429000000002051), model 12429000000002054, V1, completed successfully on the same development dataset V1. Stage: GB Regression, squared-error loss, learning rate 0.1, 100 estimators, Friedman-MSE criterion, subsample 1, max depth 3, min split 2, min leaf 5, min weight fraction 0, max features None, max leaf nodes unset, min impurity 0, init None, warm start false, tolerance 0.01831563888, explainer false. Automatic retraining is disabled. Internal RMSE 9.0178 kW and MAE 7.2381 kW are supplementary only. Endpoint Voltide_Gradient_v1 (12429000000002073) returned 800 actual selection predictions; its private key is ignored and the app remains on Ridge during comparison.
+
+| Subset | Count | RMSE kW | MAE kW | Mean prediction minus actual kW |
+| --- | ---: | ---: | ---: | ---: |
+| All selection rows | 800 | 14.1411 | 10.3634 | -4.3748 |
+| Temperature >=30 C | 95 | 30.2140 | 27.5676 | -27.5361 |
+| Actual demand >=200 kW | 206 | 22.5716 | 18.0408 | -17.2787 |
+
+Predictions SHA-256: df8d14b8bc5433378bba55590d52583790e5f3e171bbceced17317931c58b0ed. The overall improvement does not eliminate hot-weather underprediction. Random-forest comparison, fitting-row evidence, refit, and final evaluation remain pending.
+
+The [official release notes](https://docs.catalyst.zoho.com/en/release-notes/all/?service=quickml) state that the train/test split field was removed and a default 80/20 split is used. The visible stage configuration and execution statistics do not expose effective fitting-row identities or final refitting behavior. Therefore 2,400 uploaded development rows must not be represented as 2,400 verified fitted rows; 1,920/480 is the expected default split, not yet a runtime-confirmed row count.

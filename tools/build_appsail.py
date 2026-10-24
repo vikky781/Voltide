@@ -43,7 +43,8 @@ def private_config(root: Path, env: dict) -> Path:
     missing = [key for key in required if not env.get(key)]
     if missing:
         raise ValueError('Missing private deployment settings: ' + ', '.join(missing))
-    allowed = [*required, 'QUICKML_FEATURE_VERSION', 'CATALYST_ENVIRONMENT', 'ZOHO_ACCOUNTS_URL']
+    allowed = [*required, 'QUICKML_FEATURE_VERSION', 'CATALYST_ENVIRONMENT', 'ZOHO_ACCOUNTS_URL',
+               'CATALYST_RUNS_BUCKET', 'CATALYST_RUNS_TABLE']
     config = json.loads((root / 'app-config.json').read_text())
     config['env_variables'] = {'VOLTIDE_' + key: env[key] for key in allowed if env.get(key)}
     config['build_path'] = '../deploy'

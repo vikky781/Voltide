@@ -12,6 +12,7 @@ from energy.controller import evaluate_dispatch
 from energy.features import build_features, FEATURE_VERSION
 from energy.validation import parse_telemetry, select_forecast_window, MAX_SOURCE_ROWS
 
+UNSAVED_WARNING = 'Run is not saved until cloud persistence is connected.'
 
 class PredictionClient(Protocol):
     model_version: str
@@ -43,7 +44,7 @@ class ForecastService:
             "feature_version": FEATURE_VERSION,
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "saved": False, "warnings": [*validated.warnings,
-                "Run is not saved until cloud persistence is connected."],
+                UNSAVED_WARNING],
             "battery_provenance": "SIMULATED", "battery_settings": asdict(settings),
             "source_positions": [row.position for row in rows],
             "corrections": [asdict(correction) for correction in validated.corrections],

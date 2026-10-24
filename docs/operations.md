@@ -67,6 +67,33 @@ Redeploy after rebuilding with `catalyst deploy --only appsail:Voltide --project
 
 SDK compatibility: zcatalyst-sdk 1.4.0 constrains typing-extensions to ~=4.12.1. Pydantic 2.13.5 requires >=4.14.1, so these cannot be resolved together. The application now validates the five battery fields with standard Python dataclasses, preserving strict finite numbers, bounds, frozen settings, and structured API errors. Pydantic is no longer a dependency; no vendor constraint was overridden. Project `pip check` passes. Rebuild the Linux bundle before the next deployment so it uses this compatible dependency set.
 
+## Private run history
+
+Provisioned in the dedicated Development project:
+
+- Data Store table ForecastRuns, ID 92462000000018025. All application columns are mandatory; run_id is unique. App Administrator retains access; App User has no Select/Insert/Update/Delete permissions. The revoked default App User Select permission was verified after reloading the console.
+- Encrypted Stratus bucket voltide-runs-92462000000018001, Development URL https://voltide-runs-92462000000018001-development.zohostratus.in. Bucket policy explicitly denies public GetObject/PutObject/DeleteObject and contains no authenticated end-user allow rule. Server SDK administrator access must still be verified by a real round trip. No storage object is publicly linked by the API.
+
+| Column | Type / limit |
+| --- | --- |
+| run_id | varchar 36, unique |
+| session_hash | varchar 64 |
+| created_at | varchar 40, UTC ISO timestamp |
+| first_timestamp / last_timestamp | varchar 64 each, original dataset-local forecast times |
+| model_version | varchar 100 |
+| feature_version | varchar 20 |
+| object_key | varchar 160 |
+| peak_demand_kw | double |
+| critical_count | int |
+
+Set CATALYST_RUNS_BUCKET and CATALYST_RUNS_TABLE in ignored local settings; the builder maps them to VOLTIDE_* hosted variables. The repository initializes the official SDK from the current Catalyst request with admin scope, rather than caching credentials across requests. Local requests have no Catalyst SDK headers, so local history fails visibly instead of using a local production database.
+
+A signed HTTP-only SameSite=Lax cookie contains a random browser identifier. A server-keyed SHA-256 HMAC scopes the Data Store row and Stratus object key; the raw identifier is never stored in cloud records. Hosted cookies are Secure. All history queries require that scope, and object downloads recheck ownership and the expected object path. A run UUID alone does not authorize access.
+
+Each private runs/{session_hash}/{run_id}.json stores schema version 1, original source_rows, validated_rows with original positions, and the complete result including corrections and battery assumptions. The object is uploaded first; only then is metadata inserted. A failed index write may leave a private orphan object. Failed storage leaves a complete forecast with saved=false and a warning; it never advertises a history record. Logs include only failure stage and exception class, not upstream bodies or credentials.
+
+GET /api/runs lists the newest 20 session summaries. GET /api/runs/{run_id} returns only that session's result. GET /api/runs/{run_id}/export?kind=predictions writes timestamp,target_demand_kw; kind=dispatch includes all dispatch/battery/alert columns. Unknown kinds return 400, missing/other-session runs 404, unavailable history 503. API responses and exports use no-store. Real cloud durability and session isolation are not yet claimed by fixture tests.
+
 The actual local Python 3.13 registration is stale; .venv uses the working Python 3.14 interpreter. Flask 3.1.3 and the pinned requirements were installed into .venv, without training packages. The hosted Python 3.12 target still requires a compatibility check.
 
 Project creation evidence is stored locally under ignored artifacts/voltide-project.png; account screenshots are not published to Git.
